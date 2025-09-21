@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen Interactivo - Progresión 1 | Cultura Digital</title>
+    <style>
+        :root {
+            --azul-marino: #0A2E5C;
+            --rosa: #E94B7B;
+            --amarillo: #FFD700;
+            --gris-claro: #f5f5f5;
+            --blanco: #ffffff;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--gris-claro);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--blanco);
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        header {
+            text-align: center;
+            padding: 20px 0;
+            background-color: var(--azul-marino);
+            color: var(--blanco);
+            border-radius: 10px 10px 0 0;
+            margin: -20px -20px 20px -20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        .subtitle {
+            font-size: 1rem;
+            margin-top: 5px;
+            color: var(--amarillo);
+        }
+        #logo-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #intro, #question-container, #results {
+            padding: 20px;
+            display: none;
+        }
+        #intro.active, #question-container.active, #results.active {
+            display: block;
+        }
+        .question {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 5px solid var(--rosa);
+        }
+        .question-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--azul-marino);
+        }
+        .options label {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #fff;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .options label:hover {
+            background-color: #f0f0f0;
+            border-color: var(--amarillo);
+        }
+        .options input[type="radio"]:checked + span {
+            color: var(--azul-marino);
+            font-weight: bold;
+        }
+        .drag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+            min-height: 100px;
+        }
+        .draggable {
+            padding: 12px 20px;
+            background-color: var(--rosa);
+            color: white;
+            border-radius: 5px;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .droppable {
+            width: 180px;
+            min-height: 80px;
+            padding: 15px;
+            background-color: #eef7ff;
+            border: 2px dashed var(--azul-marino);
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            color: #666;
+        }
+        .true-false-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-true {
+            background-color: var(--azul-marino);
+            color: white;
+        }
+        .btn-false {
+            background-color: var(--rosa);
+            color: white;
+        }
+        .true-false-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--azul-marino);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #08254a;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        #progress {
+            height: 100%;
+            background-color: var(--amarillo);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        #results {
+            text-align: center;
+            background-color: var(--blanco);
+            padding: 40px 20px;
+            border-radius: 10px;
+        }
+        #results h2 {
+            color: var(--azul-marino);
+            margin-bottom: 20px;
+        }
+        #score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--rosa);
+            margin: 20px 0;
+        }
+        #feedback {
+            font-size: 1.2rem;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            color: var(--azul-marino);
+        }
+        .emoji {
+            font-size: 3rem;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div id="logo-container">
+                <!-- LOGO AQUÍ -->
+                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtZhoROjpNJg27Ow56k-mfMctl-pygzRCRjA&s" alt="COBAEJ Talpa" style="max-height: 80px; margin-bottom: 20px;">
+            </div>
+            <h1>Examen Interactivo: Progresión 1</h1>
+            <p class="subtitle">Sensei: Juan Pablo Romero Sanchez, COBAEJ Plantel 20 Talpa de Allende</p>
+        </header>
+
+        <!-- Pantalla de Introducción -->
+        <div id="intro" class="active">
+            <h2>¡Bienvenido al Examen de Cultura Digital!</h2>
+            <p>Consulta tu libro de la Progresión 1 para responder correctamente.</p>
+            <p>El examen tiene 30 preguntas: opción múltiple, verdadero/falso y arrastrar-soltar.</p>
+            <p>Al final, verás tu puntuación y retroalimentación.</p>
+            <div style="margin: 30px 0;">
+                <label for="student-name" style="font-weight: bold; display: block; margin-bottom: 10px;">Ingresa tu nombre completo:</label>
+                <input type="text" id="student-name" style="padding: 10px; width: 100%; max-width: 400px; font-size: 1.1rem; border: 2px solid var(--azul-marino); border-radius: 5px;">
+            </div>
+            <button id="start-btn" style="padding: 15px 40px; font-size: 1.2rem;">¡Comenzar Examen!</button>
+        </div>
+
+        <!-- Contenedor de Preguntas -->
+        <div id="question-container">
+            <div id="progress-bar"><div id="progress"></div></div>
+            <div id="question-area"></div>
+            <div class="navigation">
+                <button id="prev-btn" disabled>⬅️ Anterior</button>
+                <button id="next-btn">Siguiente ➡️</button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Resultados -->
+        <div id="results">
+            <h2>🎉 ¡Examen Completado! 🎉</h2>
+            <div class="emoji" id="result-emoji">✅</div>
+            <p id="student-display">Hola, <strong>Nombre del Alumno</strong></p>
+            <div id="score" style="font-size: 1.5rem; color: var(--rosa);">0/30</div>
+            <p style="margin-top: 20px; font-size: 1.2rem; color: #555;">Tu calificación final es:</p>
+            <div id="score-base-10" style="font-size: 2.8rem; font-weight: bold; color: var(--azul-marino); margin: 5px 0 20px 0;">0.0</div>
+            <div id="feedback">Consulta tu libro para repasar los temas.</div>
+            <button id="restart-btn" style="margin-top: 30px; padding: 15px 40px; font-size: 1.2rem;">↺ Reiniciar Examen</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const studentNameInput = document.getElementById('student-name');
+            const startBtn = document.getElementById('start-btn');
+            const introScreen = document.getElementById('intro');
+            const questionContainer = document.getElementById('question-container');
+            const resultsScreen = document.getElementById('results');
+            const questionArea = document.getElementById('question-area');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const progress = document.getElementById('progress');
+            const studentDisplay = document.getElementById('student-display');
+            const scoreDisplay = document.getElementById('score');
+            const feedbackDisplay = document.getElementById('feedback');
+            const resultEmoji = document.getElementById('result-emoji');
+            const restartBtn = document.getElementById('restart-btn');
+
+            let currentQuestion = 0;
+            let studentName = '';
+            let answers = [];
+            let draggedItems = {};
+
+            const questions = [
+                {
+                    type: 'multiple',
+                    text: 'Según la Academia Estadounidense de Pediatría, ¿cuánto tiempo de pantalla se recomienda para niños de 2 a 5 años? (Pág. 21)',
+                    options: [
+                        '30 minutos al día',
+                        '1 hora al día',
+                        '2 horas al día',
+                        'Sin límite, si es contenido educativo'
+                    ],
+                    correct: 1
+                },
+                {
+                    type: 'truefalse',
+                    text: 'El Día Mundial del Libro y del Derecho de Autor se celebra cada 23 de abril. (Pág. 28)',
+                    correct: true
+                },
+                {
+                    type: 'dragdrop',
+                    text: 'Relaciona cada tipo de licencia de software con su ejemplo correcto. (Pág. 29)',
+                    sources: ['Microsoft Windows', 'GNU GPL', 'VLC Media Player', 'Python'],
+                    targets: ['Software Propietario', 'Copyleft', 'Código Abierto', 'Software Libre'],
+                    correct: {'Microsoft Windows': 'Software Propietario', 'GNU GPL': 'Copyleft', 'VLC Media Player': 'Código Abierto', 'Python': 'Software Libre'}
+                },
+                {
+                    type: 'multiple',
+                    text: '¿Qué ley mexicana protege a las víctimas de la difusión no consensuada de imágenes íntimas, como en el caso de Samantha? (Pág. 24)',
+                    options: [
+                        'Ley Federal de Protección de Datos Personales',
+                        'Ley Olimpia',
+                        'Ley de Derechos de Autor',
+                        'Ley de Telecomunicaciones'
+                    ],
+                    correct: 1
+                },
+                {
+                    type: 'truefalse',
+                    text: 'La norma internacional ISO 27001 se refiere a la accesibilidad web. (Pág. 13)',
+                    correct: false
+                },
+                {
+                    type: 'multiple',
+                    text: '¿Cuál de los siguientes NO es un derecho digital reconocido por la ONU? (Pág. 14-15)',
+                    options: [
+                        'Derecho a la privacidad',
+                        'Derecho a la libertad de expresión',
+                        'Derecho a la neutralidad de la red',
+                        'Derecho a tener internet gratis'
+                    ],
+                    correct: 3
+                },
+                {
+                    type: 'dragdrop',
+                    text: 'Arrastra cada valor faltante al caso correspondiente. (Pág. 13-14)',
+                    sources: ['Respeto a la dignidad', 'Empatía y responsabilidad', 'Honestidad y pensamiento crítico', 'Respeto por la privacidad'],
+                    targets: [
+                        'Carlos recibe un mensaje ofensivo',
+                        'Erick es víctima de ciberacoso',
+                        'Karla encuentra información falsa',
+                        'Rafael recibe solicitud de desconocido'
+                    ],
+                    correct: {
+                        'Carlos recibe un mensaje ofensivo': 'Respeto a la dignidad',
+                        'Erick es víctima de ciberacoso': 'Empatía y responsabilidad',
+                        'Karla encuentra información falsa': 'Honestidad y pensamiento crítico',
+                        'Rafael recibe solicitud de desconocido': 'Respeto por la privacidad'
+                    }
+                },
+                {
+                    type: 'truefalse',
+                    text: 'La Ley Olimpia fue promulgada por primera vez en el estado de Puebla en 2019. (Pág. 24)',
+                    correct: true
+                },
+                {
+                    type: 'multiple',
+                    text: '¿Qué significa "2FA" en seguridad digital? (Pág. 23)',
+                    options: [
+                        'Two Factor Authentication',
+                        'Two Files Attached',
+                        'Two Factor Access',
+                        'Two Friends Allowed'
+                    ],
+                    correct: 0
+                },
+                {
+                    type: 'truefalse',
+                    text: 'La identidad digital se refiere únicamente a las contraseñas que usamos en internet. (Pág. 18)',
+                    correct: false
+                },
+                {
+                    type: 'multiple',
+                    text: '¿Cuál de estas acciones NO ayuda a reducir tu huella ecológica digital? (Pág. 25-26)',
+                    options: [
+                        'Apagar dispositivos cuando no se usan',
+                        'Reciclar dispositivos electrónicos',
+                        'Imprimir todos tus documentos digitales',
+                        'Usar videoconferencias para evitar viajes'
+                    ],
+                    correct: 2
+                },
+                {
+                    type: 'dragdrop',
+                    text: 'Relaciona cada riesgo digital con su descripción. (Pág. 24)',
+                    sources: ['Deepfake', 'Grooming', 'Sexting', 'Usurpación de identidad'],
+                    targets: [
+                        'Creación de videos falsos con IA',
+                        'Adulto que engaña a menor con fines sexuales',
+                        'Envío de contenido sexual por medios digitales',
+                        'Uso fraudulento de datos personales'
+                    ],
+                    correct: {
+                        'Deepfake': 'Creación de videos falsos con IA',
+                        'Grooming': 'Adulto que engaña a menor con fines sexuales',
+                        'Sexting': 'Envío de contenido sexual por medios digitales',
+                        'Usurpación de identidad': 'Uso fraudulento de datos personales'
+                    }
+                },
+                {
+                    type: 'truefalse',
+                    text: 'La Organización Mundial de la Salud (OMS) ha desarrollado una Estrategia Global de Salud Digital. (Pág. 21)',
+                    correct: true
+                },
+                {
+                    type: 'multiple',
+                    text: '¿Qué institución en México protege los derechos de autor? (Pág. 28)',
+                    options: [
+                        'IMPI',
+                        'INEGI',
+                        'INDAUTOR',
+                        'PROFECO'
+                    ],
+                    correct: 2
+                },
+                {
+                    type: 'truefalse',
+                    text: 'El Reglamento General de Protección de Datos (RGPD) aplica solo en Estados Unidos. (Pág. 20)',
+                    correct: false
+                },
+                {
+                    type: 'multiple',
+                    text: '¿Qué valor le falta al agresor en el caso de Daniel, quien comparte imágenes comprometedoras sin consentimiento? (Pág. 14)',
+                    options: [
+                        'Falta de respeto y empatía',
+                        'Falta de puntualidad',
+                        'Falta de interés académico',
+                        'Falta de habilidades digitales'
+                    ],
+                    correct: 0
+                },
+                {
+                    type: 'dragdrop',
+                    text: 'Relaciona cada dispositivo con una norma de seguridad recomendada. (Pág. 31)',
+                    sources: ['Computadora de escritorio', 'Teléfono móvil', 'Memoria USB', 'Tableta'],
+                    targets: [
+                        'Usar contraseñas seguras y cifrado de datos',
+                        'No descargar apps de fuentes no confiables',
+                        'No conectar a computadoras desconocidas',
+                        'Tener cuidado al usar en lugares públicos'
+                    ],
+                    correct: {
+                        'Computadora de escritorio': 'Usar contraseñas seguras y cifrado de datos',
+                        'Teléfono móvil': 'No descargar apps de fuentes no confiables',
+                        'Memoria USB': 'No conectar a computadoras desconocidas',
+                        'Tableta': 'Tener cuidado al usar en lugares públicos'
+                    }
+                },
+                {
+                    type: 'truefalse',
+                    text: 'La salud digital puede ayudar a reducir errores médicos. (Pág. 22)',
+                    correct: true
+                },
+                {
+                    type: 'multiple',
+                    text: '¿Qué tipo de licencia permite modificar el software pero exige que las modificaciones también sean libres? (Pág. 29)',
+                    options: [
+                        'Software Propietario',
+                        'Copyleft',
+                        'Dominio Público',
+                        'Creative Commons'
+                    ],
+                    correct: 1
+                },
+                {
+                    type: 'truefalse',
+                    text: 'La ciudadanía digital implica solo saber usar redes sociales. (Pág. 12)',
+                    correct: false
+                },
+                {
+                    type: 'multiple',
+                    text: '¿Qué organismo internacional establece principios para la identidad digital, incluyendo privacidad y seguridad? (Pág. 20)',
+                    options: [
+                        'UNESCO',
+                        'OMS',
+                        'OCDE',
+                        'ONU Mujeres'
+                    ],
+                    correct: 2
+                },
+                {
+                    type: 'dragdrop',
+                    text: 'Relaciona cada obligación del ciudadano digital con su descripción. (Pág. 16)',
+                    sources: ['Respetar privacidad', 'Proteger seguridad digital', 'Evitar información falsa', 'Ser respetuoso en línea'],
+                    targets: [
+                        'No compartir info personal sin consentimiento',
+                        'Usar antivirus y contraseñas fuertes',
+                        'Verificar veracidad antes de compartir',
+                        'Evitar acoso y bullying digital'
+                    ],
+                    correct: {
+                        'Respetar privacidad': 'No compartir info personal sin consentimiento',
+                        'Proteger seguridad digital': 'Usar antivirus y contraseñas fuertes',
+                        'Evitar información falsa': 'Verificar veracidad antes de compartir',
+                        'Ser respetuoso en línea': 'Evitar acoso y bullying digital'
+                    }
+                },
+                {
+                    type: 'truefalse',
+                    text: 'La Ley Gramm-Leach-Bliley (GLBA) establece requisitos de privacidad para instituciones financieras en EUA. (Pág. 20)',
+                    correct: true
+                },
+                {
+                    type: 'multiple',
+                    text: '¿Qué significa la sigla TICCAD mencionada en el libro? (Pág. 12)',
+                    options: [
+                        'Tecnologías de Información, Comunicación, Conocimiento y Aprendizaje Digitales',
+                        'Tecnologías Inteligentes para el Cambio y el Aprendizaje Digital',
+                        'Técnicas Informáticas para la Comunicación y el Análisis de Datos',
+                        'Totalmente Integradas en la Cultura y el Aprendizaje Digital'
+                    ],
+                    correct: 0
+                },
+                {
+                    type: 'truefalse',
+                    text: 'La identidad digital no afecta la reputación de una persona en el mundo real. (Pág. 18)',
+                    correct: false
+                },
+                {
+                    type: 'multiple',
+                    text: '¿Cuál de estos NO es un beneficio de la salud digital? (Pág. 22)',
+                    options: [
+                        'Acceso a información médica',
+                        'Monitoreo remoto de la salud',
+                        'Telemedicina',
+                        'Aumento del consumo de energía'
+                    ],
+                    correct: 3
+                },
+                {
+                    type: 'dragdrop',
+                    text: 'Relaciona cada año con el hito en ciudadanía digital. (Pág. 14-15)',
+                    sources: ['1990', '2011', '2016', '2021'],
+                    targets: [
+                        'Nacimiento de la World Wide Web',
+                        'ONU: libertad de expresión en línea',
+                        'ONU: derecho a la libertad de expresión aplica en línea',
+                        'ONU: informe sobre privacidad en era digital'
+                    ],
+                    correct: {
+                        '1990': 'Nacimiento de la World Wide Web',
+                        '2011': 'ONU: libertad de expresión en línea',
+                        '2016': 'ONU: derecho a la libertad de expresión aplica en línea',
+                        '2021': 'ONU: informe sobre privacidad en era digital'
+                    }
+                },
+                {
+                    type: 'truefalse',
+                    text: 'La piratería es cuando alguien reproduce contenido protegido sin permiso. (Pág. 29)',
+                    correct: true
+                },
+                {
+                    type: 'multiple',
+                    text: '¿Qué institución regula los derechos de autor en México? (Pág. 28)',
+                    options: [
+                        'SEP',
+                        'INDAUTOR',
+                        'IMPI',
+                        'IFT'
+                    ],
+                    correct: 1
+                },
+                {
+                    type: 'truefalse',
+                    text: 'El acoso escolar (bullying) se caracteriza por intencionalidad, persistencia y asimetría de poder. (Pág. 24)',
+                    correct: true
+                }
+            ];
+
+            // Inicializar arrastrar y soltar
+            function initDragDrop(questionIndex) {
+                const question = questions[questionIndex];
+                if (question.type !== 'dragdrop') return;
+
+                const dragContainer = questionArea.querySelector('.drag-container');
+                const dropZones = questionArea.querySelectorAll('.droppable');
+
+                dragContainer.addEventListener('dragstart', function(e) {
+                    if (e.target.classList.contains('draggable')) {
+                        e.dataTransfer.setData('text/plain', e.target.textContent);
+                        e.target.classList.add('dragging');
+                    }
+                });
+
+                dragContainer.addEventListener('dragend', function(e) {
+                    if (e.target.classList.contains('draggable')) {
+                        e.target.classList.remove('dragging');
+                    }
+                });
+
+                dropZones.forEach(zone => {
+                    zone.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                        zone.style.backgroundColor = '#d0e7ff';
+                    });
+
+                    zone.addEventListener('dragleave', function(e) {
+                        e.preventDefault();
+                        zone.style.backgroundColor = '#eef7ff';
+                    });
+
+                    zone.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        const draggedText = e.dataTransfer.getData('text/plain');
+                        
+                        if (draggedText && !zone.querySelector('.draggable')) {
+                            const clone = document.createElement('div');
+                            clone.className = 'draggable';
+                            clone.textContent = draggedText;
+                            clone.style.cursor = 'default';
+                            clone.style.opacity = '0.8';
+                            zone.appendChild(clone);
+
+                            // Guardar la asociación
+                            draggedItems[zone.dataset.target] = draggedText;
+
+                            // Remover el elemento original
+                            const original = Array.from(dragContainer.children).find(el => el.textContent === draggedText);
+                            if (original) {
+                                original.remove();
+                            }
+
+                            zone.style.backgroundColor = '#eef7ff';
+                        }
+                    });
+                });
+            }
+
+            // Renderizar pregunta actual
+            function renderQuestion(index) {
+                const question = questions[index];
+                let html = `<div class="question">
+                    <div class="question-title">Pregunta ${index + 1} de ${questions.length}</div>
+                    <p><strong>${question.text}</strong></p>`;
+
+                if (question.type === 'multiple') {
+                    html += '<div class="options">';
+                    question.options.forEach((option, i) => {
+                        const isChecked = answers[index] === i ? 'checked' : '';
+                        html += `
+                            <label>
+                                <input type="radio" name="q${index}" value="${i}" ${isChecked} onchange="saveAnswer(${index}, this.value)">
+                                <span>${option}</span>
+                            </label>`;
+                    });
+                    html += '</div>';
+                } else if (question.type === 'truefalse') {
+                    html += `
+                        <div style="text-align: center; margin: 20px 0;">
+                            <button class="true-false-btn btn-true" onclick="saveTFAnswer(${index}, true)">Verdadero</button>
+                            <button class="true-false-btn btn-false" onclick="saveTFAnswer(${index}, false)">Falso</button>
+                        </div>`;
+                    if (answers[index] !== undefined) {
+                        const selectedBtn = answers[index] === true ? '.btn-true' : '.btn-false';
+                        const btn = questionArea.querySelector(selectedBtn);
+                        if (btn) btn.style.backgroundColor = '#4CAF50';
+                    }
+                } else if (question.type === 'dragdrop') {
+                    html += '<div class="drag-container" style="justify-content: center;">';
+                    question.sources.forEach(source => {
+                        html += `<div class="draggable" draggable="true">${source}</div>`;
+                    });
+                    html += '</div>';
+                    html += '<div style="margin: 30px 0;">';
+                    question.targets.forEach(target => {
+                        html += `<div class="droppable" data-target="${target}">
+                            <strong>${target}</strong>
+                            <br><small>Suelta aquí</small>
+                        </div>`;
+                    });
+                    html += '</div>';
+                }
+
+                html += '</div>';
+                questionArea.innerHTML = html;
+
+                // Inicializar drag and drop si es necesario
+                if (question.type === 'dragdrop') {
+                    draggedItems = {}; // Reiniciar para esta pregunta
+                    setTimeout(() => initDragDrop(index), 100);
+                }
+
+                // Actualizar barra de progreso
+                progress.style.width = `${((index + 1) / questions.length) * 100}%`;
+
+                // Actualizar botones de navegación
+                prevBtn.disabled = index === 0;
+                nextBtn.textContent = index === questions.length - 1 ? 'Finalizar Examen 🎯' : 'Siguiente ➡️';
+            }
+
+            // Guardar respuesta de opción múltiple
+            window.saveAnswer = function(index, value) {
+                answers[index] = parseInt(value);
+            };
+
+            // Guardar respuesta de verdadero/falso
+            window.saveTFAnswer = function(index, value) {
+                answers[index] = value;
+                // Resaltar botón seleccionado
+                const btns = questionArea.querySelectorAll('.true-false-btn');
+                btns.forEach(btn => {
+                    btn.style.backgroundColor = '';
+                });
+                const selectedBtn = value ? '.btn-true' : '.btn-false';
+                const btn = questionArea.querySelector(selectedBtn);
+                if (btn) btn.style.backgroundColor = '#4CAF50';
+            };
+
+            // Calcular puntuación
+            function calculateScore() {
+                let score = 0;
+                questions.forEach((question, index) => {
+                    if (question.type === 'multiple' || question.type === 'truefalse') {
+                        if (answers[index] === question.correct) {
+                            score++;
+                        }
+                    } else if (question.type === 'dragdrop') {
+                        let correctCount = 0;
+                        for (let target in question.correct) {
+                            if (draggedItems[target] === question.correct[target]) {
+                                correctCount++;
+                            }
+                        }
+                        if (correctCount === Object.keys(question.correct).length) {
+                            score++;
+                        }
+                    }
+                });
+                return score;
+            }
+
+            // Mostrar resultados
+            function showResults() {
+                questionContainer.classList.remove('active');
+                resultsScreen.classList.add('active');
+
+                const score = calculateScore();
+                const maxScore = questions.length;
+                const scoreBase10 = (score / maxScore) * 10;
+
+                studentDisplay.innerHTML = `Hola, <strong>${studentName}</strong>`;
+                scoreDisplay.textContent = `Aciertos: ${score}/${maxScore}`;
+
+                const scoreBase10Display = document.getElementById('score-base-10');
+                if (scoreBase10Display) {
+                    scoreBase10Display.textContent = scoreBase10.toFixed(1);
+                }
+
+                let feedback = '';
+                let emoji = '✅';
+                if (scoreBase10 >= 9) {
+                    feedback = '¡Excelente! Eres un ciudadano digital ejemplar. 🌟';
+                    emoji = '🌟';
+                } else if (scoreBase10 >= 7) {
+                    feedback = '¡Muy bien! Consultaste bien tu libro. Sigue así. 👍';
+                    emoji = '👍';
+                } else {
+                    feedback = 'Es un buen inicio. Repasa los temas clave en tu libro. 📚';
+                    emoji = '📚';
+                }
+
+                feedbackDisplay.textContent = feedback;
+                resultEmoji.textContent = emoji;
+            }
+
+            // Event Listeners
+            startBtn.addEventListener('click', function() {
+                studentName = studentNameInput.value.trim();
+                if (studentName === '') {
+                    alert('Por favor, ingresa tu nombre.');
+                    return;
+                }
+                introScreen.classList.remove('active');
+                questionContainer.classList.add('active');
+                renderQuestion(currentQuestion);
+            });
+
+            prevBtn.addEventListener('click', function() {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    renderQuestion(currentQuestion);
+                }
+            });
+
+            nextBtn.addEventListener('click', function() {
+                if (currentQuestion < questions.length - 1) {
+                    currentQuestion++;
+                    renderQuestion(currentQuestion);
+                } else {
+                    showResults();
+                }
+            });
+
+            restartBtn.addEventListener('click', function() {
+                currentQuestion = 0;
+                answers = [];
+                draggedItems = {};
+                studentName = '';
+                studentNameInput.value = '';
+                resultsScreen.classList.remove('active');
+                introScreen.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
